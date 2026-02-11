@@ -14,6 +14,7 @@ final getIt = GetIt.instance;
 Future<void> configureDependencies() async {
   getIt.registerSingletonAsync<ConnectionService>(() async => ConnectionService().init());
   getIt.registerSingletonAsync<LocalStorageService>(() async => LocalStorageService().init());
+  await getIt.allReady();
   getIt.registerSingletonAsync<FirebaseService>(() async => FirebaseService().init());
   getIt.registerSingletonAsync<LocalNotificationService>(() async => LocalNotificationService().init());
   getIt.registerSingletonAsync<PermissionService>(() async => PermissionService().init());
