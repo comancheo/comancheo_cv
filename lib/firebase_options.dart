@@ -26,10 +26,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return ios;
         // return ios;
       case TargetPlatform.macOS:
         throw UnsupportedError(
@@ -62,12 +59,12 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAvIPwtdvMuXyE2JFdy6C6Go-4C0AoAnJA',
-    appId: '1:118310164603:android:18a7b825c18701be1d6ade',
-    messagingSenderId: '23783262033',
+    apiKey: 'AIzaSyCU71kzCpDN7jBq5zr1J_5YeNacu4oknQQ',
+    appId: '1:118310164603:ios:607076b7e5eeb0a91d6ade',
+    messagingSenderId: '118310164603',
     projectId: 'comancheo-cv',
     storageBucket: 'comancheo-cv.firebasestorage.app',
-    iosClientId: '',
-    iosBundleId: '',
+    // iosClientId: '',
+    iosBundleId: 'cz.comancheo.cv',
   );
 }

@@ -1,5 +1,7 @@
 
 
+import 'dart:io';
+
 import 'package:comancheo_cv/firebase_options.dart';
 import 'package:comancheo_cv/models/app_notification.dart';
 import 'package:comancheo_cv/utils/globals.dart' as globals;
@@ -25,6 +27,9 @@ class FirebaseService {
   Future<FirebaseService> init() async {
     await initializeFirebaseApp();
     await initializeFlutterFire();
+    if(Platform.isIOS){
+      return this;
+    }
     await initializeMessaging();
     return this;
   }
