@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "118310164603",
+    "project_id": "comancheo-cv",
+    "storage_bucket": "comancheo-cv.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:118310164603:android:18a7b825c18701be1d6ade",
+        "android_client_info": {
+          "package_name": "cz.comancheo.cv"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvIPwtdvMuXyE2JFdy6C6Go-4C0AoAnJA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
