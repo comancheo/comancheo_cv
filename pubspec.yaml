@@ -49,6 +49,8 @@ dependencies:
   rss_dart: ^1.0.14
   http: ^1.6.0
   flutter_drop_cap_text: ^1.0.1
+  bloc: ^9.2.0
+  flutter_bloc: ^9.1.1
 
 
 dev_dependencies:

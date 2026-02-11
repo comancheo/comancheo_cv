@@ -24,8 +24,8 @@ class NewsScreenState extends State<NewsScreen> {
       },
       title: "Zprávy ČTK",
       body: [
-        ...List.generate(_ctkNewsService.newsItems.length, (index) {
-          final item = _ctkNewsService.newsItems[index];
+        ...List.generate(_ctkNewsService.newsItems.state.length, (index) {
+          final item = _ctkNewsService.newsItems.state[index];
           return NewsItemCard(
             title: item.title??'',
             description: item.description??'',

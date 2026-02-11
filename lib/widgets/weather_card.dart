@@ -1,7 +1,10 @@
+import 'package:comancheo_cv/cubits/base_cubits.dart';
+import 'package:comancheo_cv/models/weather_model.dart';
 import 'package:comancheo_cv/services/weather.dart';
 import 'package:comancheo_cv/utils/wmo_codes.dart';
 import 'package:comancheo_cv/widgets/custom_card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 
 class WeatherCard extends StatefulWidget {
@@ -22,25 +25,45 @@ class _WeatherCardState extends State<WeatherCard> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          if (_weatherService.forecast?.currentWeather != null) ...[
-            Row(
-              children: [
-                Text('${_weatherService.forecast!.currentWeather.windSpeed?.toStringAsFixed(0)} ', style: Theme.of(context).textTheme.headlineSmall),
-                Text(_weatherService.forecast!.currentWeather.windSpeedUnit, style: Theme.of(context).textTheme.bodySmall),
-                Spacer(),
-                Text('${_weatherService.forecast!.currentWeather.humidity?.toStringAsFixed(0)} ', style: Theme.of(context).textTheme.headlineSmall),
-                Text(_weatherService.forecast!.currentWeather.humidityUnit, style: Theme.of(context).textTheme.bodySmall),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text('${_weatherService.forecast!.currentWeather.temperature} ', style: Theme.of(context).textTheme.headlineMedium),
-                Text(_weatherService.forecast!.currentWeather.temperatureUnit, style: Theme.of(context).textTheme.bodyMedium),
-              ],
-            ),
-            Text('${wmoCodes[_weatherService.forecast!.currentWeather.weatherCode]?['day']?['description'] ?? 'Neznámé'}', style: Theme.of(context).textTheme.bodyMedium),
-          ],
+          BlocBuilder<NullBoolCubit, bool?>(
+            bloc: _weatherService.loading,
+            builder: (context, loading) {
+              if (loading == true) {
+                return const Center(child: CircularProgressIndicator());
+              } else {
+                return BlocBuilder<NullForecastModelCubit, ForecastModel?>(
+                  bloc: _weatherService.forecast,
+                  builder: (context, forecast) {
+                    if (forecast == null) {
+                      return const SizedBox();
+                    } else {
+                      return Wrap(
+                        children: [
+                          Row(
+                            children: [
+                              Text('${forecast.currentWeather.windSpeed?.toStringAsFixed(0)} ', style: Theme.of(context).textTheme.headlineSmall),
+                              Text(forecast.currentWeather.windSpeedUnit, style: Theme.of(context).textTheme.bodySmall),
+                              Spacer(),
+                              Text('${forecast.currentWeather.humidity?.toStringAsFixed(0)} ', style: Theme.of(context).textTheme.headlineSmall),
+                              Text(forecast.currentWeather.humidityUnit, style: Theme.of(context).textTheme.bodySmall),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text('${forecast.currentWeather.temperature} ', style: Theme.of(context).textTheme.headlineMedium),
+                              Text(forecast.currentWeather.temperatureUnit, style: Theme.of(context).textTheme.bodyMedium),
+                            ],
+                          ),
+                          Text('${wmoCodes[forecast.currentWeather.weatherCode]?['day']?['description'] ?? 'Neznámé'}', style: Theme.of(context).textTheme.bodyMedium),
+                        ],
+                      );
+                    }
+                  },
+                );
+              }
+            },
+          ),
         ],
       ),
     );

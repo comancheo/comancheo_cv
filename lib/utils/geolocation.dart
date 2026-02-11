@@ -1,16 +1,25 @@
+import 'package:comancheo_cv/cubits/base_cubits.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 
 class GeolocationService {
   Position? currentPosition;
+  final NullBoolCubit loading = NullBoolCubit();
 
   Future<GeolocationService> init() async {
+    await refresh();
+    
+    return this;
+  }
+
+  Future<void> refresh() async {
+    loading.set(true);
     try {
       currentPosition = await determinePosition();
     } catch (e) {
       currentPosition = fallbackPosition;
     }
-    return this;
+    loading.set(false);
   }
 
   static Position fallbackPosition = Position(

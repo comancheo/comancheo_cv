@@ -1,7 +1,7 @@
 import 'package:comancheo_cv/services/ctk_news.dart';
-import 'package:comancheo_cv/widgets/custom_card.dart';
+import 'package:comancheo_cv/services/weather.dart';
+import 'package:comancheo_cv/utils/geolocation.dart';
 import 'package:comancheo_cv/widgets/custom_scaffold.dart';
-import 'package:comancheo_cv/widgets/map.dart';
 import 'package:comancheo_cv/widgets/map_card.dart';
 import 'package:comancheo_cv/widgets/news_card.dart';
 import 'package:comancheo_cv/widgets/weather_card.dart';
@@ -18,16 +18,31 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  late final GeolocationService _geolocationService;
+  bool _geolocationReady = false;
   final CtkNewsService _ctkNewsService = GetIt.instance<CtkNewsService>();
+  final WeatherService _weatherService = GetIt.instance<WeatherService>();
+
+  @override
+  void initState() {
+    super.initState();
+    GetIt.instance.getAsync<GeolocationService>().then((value) {
+      _geolocationService = value;
+      setState(() {
+        _geolocationReady = true;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
       onRefresh: () async {
-        return await _ctkNewsService.loadNews();
+        await Future.wait([if (_geolocationReady) _geolocationService.refresh(), _ctkNewsService.loadNews(), _weatherService.loadWeather()]);
       },
       title: "Dashboard",
       body: [
-        Row(children: [WeatherCard(),Spacer(),WeatherCard()]),
+        Row(children: [WeatherCard(), Spacer(), WeatherCard()]),
         SizedBox(height: 20),
         NewsCard(),
         SizedBox(height: 20),

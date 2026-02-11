@@ -1,9 +1,11 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:comancheo_cv/auto_route/app_router.gr.dart';
+import 'package:comancheo_cv/cubits/base_cubits.dart';
 import 'package:comancheo_cv/services/ctk_news.dart';
 import 'package:comancheo_cv/widgets/custom_card.dart';
 import 'package:comancheo_cv/widgets/image_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_drop_cap_text/flutter_drop_cap_text.dart';
 import 'package:get_it/get_it.dart';
 import 'package:rss_dart/domain/rss_item.dart';
@@ -29,23 +31,62 @@ class NewsCardState extends State<NewsCard> {
         children: [
           Text("Zprávy ČTK", style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 20),
-          ...List.generate(3, (index) {
-            final RssItem item = _ctkNewsService.newsItems[index];
-            return DropCapText(
-              (item.title ?? '').trimLeft(),
-              style: Theme.of(context).textTheme.bodyMedium,
-              dropCap: (item.enclosure?.url == null)
-                  ? null
-                  : DropCap(
-                      width: 60,
-                      height: 60,
-                      child: Padding(
-                        padding: EdgeInsets.only(right: 10, bottom: 10),
-                        child: ImageWidget(imagePath: item.enclosure!.url!, width: 50, height: 50),
-                      ),
-                    ),
-            );
-          }),
+          BlocBuilder<NullBoolCubit, bool?>(
+            bloc: _ctkNewsService.loading,
+            builder: (context, loading) {
+              if (loading == true) {
+                return const Center(child: CircularProgressIndicator());
+              } else {
+                return BlocBuilder<ListCubit<RssItem>, List<RssItem>>(
+                  bloc: _ctkNewsService.newsItems,
+                  builder: (context, items) {
+                    if (items.isEmpty) {
+                      return const SizedBox();
+                    } else {
+                      return Wrap(
+                        spacing: 10,
+                        runSpacing: 10,
+                        children: List.generate(3, (index) {
+                          final RssItem item = _ctkNewsService.newsItems.state[index];
+                          return DropCapText(
+                            (item.title ?? '').trimLeft(),
+                            style: Theme.of(context).textTheme.bodyMedium,
+                            dropCap: (item.enclosure?.url == null)
+                                ? null
+                                : DropCap(
+                                    width: 60,
+                                    height: 60,
+                                    child: Padding(
+                                      padding: EdgeInsets.only(right: 10, bottom: 10),
+                                      child: ImageWidget(imagePath: item.enclosure!.url!, width: 50, height: 50),
+                                    ),
+                                  ),
+                          );
+                        }),
+                      );
+                    }
+                  },
+                );
+              }
+            },
+          ),
+          // ...List.generate(3, (index) {
+          //   final RssItem item = _ctkNewsService.newsItems.state[index];
+          //   return DropCapText(
+          //     (item.title ?? '').trimLeft(),
+          //     style: Theme.of(context).textTheme.bodyMedium,
+          //     dropCap: (item.enclosure?.url == null)
+          //         ? null
+          //         : DropCap(
+          //             width: 60,
+          //             height: 60,
+          //             child: Padding(
+          //               padding: EdgeInsets.only(right: 10, bottom: 10),
+          //               child: ImageWidget(imagePath: item.enclosure!.url!, width: 50, height: 50),
+          //             ),
+          //           ),
+          //   );
+          // }),
         ],
       ),
     );
