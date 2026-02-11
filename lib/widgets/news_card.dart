@@ -25,69 +25,45 @@ class NewsCardState extends State<NewsCard> {
       onTap: () {
         context.router.push(NewsRoute());
       },
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text("Zprávy ČTK", style: Theme.of(context).textTheme.headlineSmall),
-          const SizedBox(height: 20),
-          BlocBuilder<NullBoolCubit, bool?>(
-            bloc: _ctkNewsService.loading,
-            builder: (context, loading) {
-              if (loading == true) {
-                return const Center(child: CircularProgressIndicator());
-              } else {
-                return BlocBuilder<ListCubit<RssItem>, List<RssItem>>(
-                  bloc: _ctkNewsService.newsItems,
-                  builder: (context, items) {
-                    if (items.isEmpty) {
-                      return const SizedBox();
-                    } else {
-                      return Wrap(
-                        spacing: 10,
-                        runSpacing: 10,
-                        children: List.generate(3, (index) {
-                          final RssItem item = _ctkNewsService.newsItems.state[index];
-                          return DropCapText(
-                            (item.title ?? '').trimLeft(),
-                            style: Theme.of(context).textTheme.bodyMedium,
-                            dropCap: (item.enclosure?.url == null)
-                                ? null
-                                : DropCap(
-                                    width: 60,
-                                    height: 60,
-                                    child: Padding(
-                                      padding: EdgeInsets.only(right: 10, bottom: 10),
-                                      child: ImageWidget(imagePath: item.enclosure!.url!, width: 50, height: 50),
-                                    ),
-                                  ),
-                          );
-                        }),
+      child: BlocBuilder<NullBoolCubit, bool?>(
+        bloc: _ctkNewsService.loading,
+        builder: (context, loading) {
+          return BlocBuilder<ListCubit<RssItem>, List<RssItem>>(
+            bloc: _ctkNewsService.newsItems,
+            builder: (context, items) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Zprávy ČTK", style: Theme.of(context).textTheme.headlineSmall),
+                  const SizedBox(height: 20),
+                  if (loading == true) ...[
+                    const Center(child: CircularProgressIndicator()),
+                  ] else if (items.isEmpty) ...[
+                    const SizedBox(),
+                  ] else
+                    ...List.generate(3, (index) {
+                      final RssItem item = _ctkNewsService.newsItems.state[index];
+                      return DropCapText(
+                        (item.title ?? '').trimLeft(),
+                        style: Theme.of(context).textTheme.bodyMedium,
+                        dropCap: (item.enclosure?.url == null)
+                            ? null
+                            : DropCap(
+                                width: 60,
+                                height: 60,
+                                child: Padding(
+                                  padding: EdgeInsets.only(right: 10, bottom: 10),
+                                  child: ImageWidget(imagePath: item.enclosure!.url!, width: 50, height: 50),
+                                ),
+                              ),
                       );
-                    }
-                  },
-                );
-              }
+                    }),
+                ],
+              );
             },
-          ),
-          // ...List.generate(3, (index) {
-          //   final RssItem item = _ctkNewsService.newsItems.state[index];
-          //   return DropCapText(
-          //     (item.title ?? '').trimLeft(),
-          //     style: Theme.of(context).textTheme.bodyMedium,
-          //     dropCap: (item.enclosure?.url == null)
-          //         ? null
-          //         : DropCap(
-          //             width: 60,
-          //             height: 60,
-          //             child: Padding(
-          //               padding: EdgeInsets.only(right: 10, bottom: 10),
-          //               child: ImageWidget(imagePath: item.enclosure!.url!, width: 50, height: 50),
-          //             ),
-          //           ),
-          //   );
-          // }),
-        ],
+          );
+        },
       ),
     );
   }

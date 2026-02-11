@@ -19,53 +19,47 @@ class _WeatherCardState extends State<WeatherCard> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomCard(
-      width: 155,
-      height: 155,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          BlocBuilder<NullBoolCubit, bool?>(
-            bloc: _weatherService.loading,
-            builder: (context, loading) {
-              if (loading == true) {
-                return const Center(child: CircularProgressIndicator());
-              } else {
-                return BlocBuilder<NullForecastModelCubit, ForecastModel?>(
-                  bloc: _weatherService.forecast,
-                  builder: (context, forecast) {
-                    if (forecast == null) {
-                      return const SizedBox();
-                    } else {
-                      return Wrap(
-                        children: [
-                          Row(
-                            children: [
-                              Text('${forecast.currentWeather.windSpeed?.toStringAsFixed(0)} ', style: Theme.of(context).textTheme.headlineSmall),
-                              Text(forecast.currentWeather.windSpeedUnit, style: Theme.of(context).textTheme.bodySmall),
-                              Spacer(),
-                              Text('${forecast.currentWeather.humidity?.toStringAsFixed(0)} ', style: Theme.of(context).textTheme.headlineSmall),
-                              Text(forecast.currentWeather.humidityUnit, style: Theme.of(context).textTheme.bodySmall),
-                            ],
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text('${forecast.currentWeather.temperature} ', style: Theme.of(context).textTheme.headlineMedium),
-                              Text(forecast.currentWeather.temperatureUnit, style: Theme.of(context).textTheme.bodyMedium),
-                            ],
-                          ),
-                          Text('${wmoCodes[forecast.currentWeather.weatherCode]?['day']?['description'] ?? 'Neznámé'}', style: Theme.of(context).textTheme.bodyMedium),
-                        ],
-                      );
-                    }
-                  },
-                );
-              }
-            },
-          ),
-        ],
-      ),
+    return BlocBuilder<NullBoolCubit, bool?>(
+      bloc: _weatherService.loading,
+      builder: (context, loading) {
+        return BlocBuilder<NullForecastModelCubit, ForecastModel?>(
+          bloc: _weatherService.forecast,
+          builder: (context, forecast) {
+            return CustomCard(
+              width: 155,
+              height: 155,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  if (loading == true) ...[
+                    const Center(child: CircularProgressIndicator()),
+                  ] else if (forecast == null) ...[
+                    const SizedBox(),
+                  ] else ...[
+                    Row(
+                      children: [
+                        Text('${forecast.currentWeather.windSpeed?.toStringAsFixed(0)} ', style: Theme.of(context).textTheme.headlineSmall),
+                        Text(forecast.currentWeather.windSpeedUnit, style: Theme.of(context).textTheme.bodySmall),
+                        Spacer(),
+                        Text('${forecast.currentWeather.humidity?.toStringAsFixed(0)} ', style: Theme.of(context).textTheme.headlineSmall),
+                        Text(forecast.currentWeather.humidityUnit, style: Theme.of(context).textTheme.bodySmall),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('${forecast.currentWeather.temperature} ', style: Theme.of(context).textTheme.headlineMedium),
+                        Text(forecast.currentWeather.temperatureUnit, style: Theme.of(context).textTheme.bodyMedium),
+                      ],
+                    ),
+                    Text('${wmoCodes[forecast.currentWeather.weatherCode]?['day']?['description'] ?? 'Neznámé'}', style: Theme.of(context).textTheme.bodyMedium),
+                  ],
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }
