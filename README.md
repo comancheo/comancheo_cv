@@ -64,3 +64,5 @@ Images are loaded from internet via CachedNetworkImage, it's used to show my pro
 
 ## Firebase Messaging
 Firebase provides way to send push notification to apps (web, iOS and Android, maybe more?). If app is backgrounded or simply not opened, your OS will show you notification. If you click at it my APP will open and show this notification. There is a way to send some data, so APP can navigate to some Screen or do some stuff i.e. reload messages inside Chat or anyother data.
+### notif.sh
+To test notifications I use ease shell command, where I us `gcloud` cli to get bearer for my Firebase project, and then I can change body of my notification (title and body), or add some data. Then just hit `./notification/notif.sh __FCM_TOKEN__` and then you get your push notification.
