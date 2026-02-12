@@ -25,7 +25,7 @@ class CustomScaffold extends StatelessWidget {
               IconButton(onPressed: () {context.router.back();}, icon: Row(children:[Icon(Icons.arrow_back),SizedBox(width: 8), Text("Zpět")]))
               :InkWell(
                 onTap: () {
-                  ImageWidget.openInDialog(context, imagePath: 'https://avatars.githubusercontent.com/u/48067900?v=4', fit: BoxFit.cover, width: 200, height: 200);
+                  ImageWidget.openInDialog(context, imagePath: 'https://avatars.githubusercontent.com/u/48067900', fit: BoxFit.cover, width: 200, height: 200);
                 },
                 child: Container(
                   margin: const EdgeInsets.all(20),

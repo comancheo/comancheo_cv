@@ -1,3 +1,4 @@
+import 'package:comancheo_cv/services/calendar.dart';
 import 'package:comancheo_cv/services/chat.dart';
 import 'package:comancheo_cv/services/connection.dart';
 import 'package:comancheo_cv/services/ctk_news.dart';
@@ -20,6 +21,7 @@ Future<void> configureDependencies() async {
   getIt.registerSingletonAsync<PermissionService>(() async => PermissionService().init());
   getIt.registerSingletonAsync<CtkNewsService>(() async => CtkNewsService().init());
   getIt.registerSingletonAsync<WeatherService>(() async => WeatherService().init());
+  getIt.registerSingletonAsync<CalendarService>(() async => CalendarService().init());
   getIt.registerSingletonAsync<ChatService>(() async => ChatService().init());
 
   getIt.registerLazySingletonAsync<GeolocationService>(() async => GeolocationService().init());

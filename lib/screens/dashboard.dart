@@ -1,6 +1,8 @@
+import 'package:comancheo_cv/services/calendar.dart';
 import 'package:comancheo_cv/services/ctk_news.dart';
 import 'package:comancheo_cv/services/weather.dart';
 import 'package:comancheo_cv/utils/geolocation.dart';
+import 'package:comancheo_cv/widgets/calendart_card.dart';
 import 'package:comancheo_cv/widgets/custom_scaffold.dart';
 import 'package:comancheo_cv/widgets/map_card.dart';
 import 'package:comancheo_cv/widgets/news_card.dart';
@@ -22,6 +24,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   bool _geolocationReady = false;
   final CtkNewsService _ctkNewsService = GetIt.instance<CtkNewsService>();
   final WeatherService _weatherService = GetIt.instance<WeatherService>();
+  final CalendarService _calendarService = GetIt.instance<CalendarService>();
 
   @override
   void initState() {
@@ -38,11 +41,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     return CustomScaffold(
       onRefresh: () async {
-        await Future.wait([if (_geolocationReady) _geolocationService.refresh(), _ctkNewsService.loadNews(), _weatherService.loadWeather()]);
+        await Future.wait([if (_geolocationReady) _geolocationService.refresh(), _ctkNewsService.loadNews(), _weatherService.loadWeather(), _calendarService.loadTodayData()]);
       },
       title: "Dashboard",
       body: [
-        Row(children: [WeatherCard(), Spacer(), WeatherCard()]),
+        Row(children: [WeatherCard(), Spacer(), CalendarCard()]),
         SizedBox(height: 20),
         NewsCard(),
         SizedBox(height: 20),

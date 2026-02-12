@@ -54,6 +54,10 @@ dependencies:
   uuid: ^4.5.2
   localstorage: ^6.0.0
   collection: ^1.19.1
+  flutter_nameday_api:
+    path: ../../flutter_nameday_package
+    # git:
+    #   url: https://github.com/comancheo/flutter_nameday_package.git
 
 
 dev_dependencies:

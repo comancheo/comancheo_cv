@@ -7,12 +7,29 @@ class ImageWidget extends StatelessWidget {
   final double width;
   final double height;
   final BoxFit fit;
+  final ColorFilter? colorFilter;
 
-  const ImageWidget({super.key, required this.imagePath, this.width = 100, this.height = 100, this.fit = BoxFit.cover});
+  const ImageWidget({super.key, required this.imagePath, this.width = 100, this.height = 100, this.fit = BoxFit.cover, this.colorFilter});
   bool get isNetwork => imagePath.startsWith('http://') || imagePath.startsWith('https://');
+
+  Widget _buildImage() {
+    if (isNetwork) {
+      return CachedNetworkImage(imageUrl: imagePath, width: width, height: height, fit: fit);
+    } else {
+      return Image.asset(imagePath, width: width, height: height, fit: fit);
+    }
+  }
+
+  Widget _buildWithFilter() {
+    return ColorFiltered(
+        colorFilter: colorFilter ?? ColorFilter.mode(Colors.white, BlendMode.srcIn),
+        child: _buildImage(),
+      );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return isNetwork ? CachedNetworkImage(imageUrl: imagePath, width: width, height: height, fit: fit) : Image.asset(imagePath, width: width, height: height, fit: fit);
+    return colorFilter != null ? _buildWithFilter() : _buildImage();
   }
 
   static Future<void> openInDialog(BuildContext context, {String? title, required String imagePath, BoxFit? fit, double? width, double? height}) async {
