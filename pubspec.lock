@@ -449,9 +449,11 @@ packages:
   flutter_nameday_api:
     dependency: "direct main"
     description:
-      path: "../../flutter_nameday_package"
-      relative: true
-    source: path
+      path: "."
+      ref: HEAD
+      resolved-ref: "778199025e3e87c98d642c98dcb9ce52e2e79a46"
+      url: "https://github.com/comancheo/flutter_nameday_package.git"
+    source: git
     version: "0.0.2"
   flutter_test:
     dependency: "direct dev"

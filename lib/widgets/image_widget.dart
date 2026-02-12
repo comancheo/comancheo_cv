@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:comancheo_cv/widgets/custom_dialog.dart';
+import 'package:comancheo_cv/widgets/no_data_image.dart';
 import 'package:flutter/material.dart';
 
 class ImageWidget extends StatelessWidget {
@@ -14,7 +15,7 @@ class ImageWidget extends StatelessWidget {
 
   Widget _buildImage() {
     if (isNetwork) {
-      return CachedNetworkImage(imageUrl: imagePath, width: width, height: height, fit: fit);
+      return CachedNetworkImage(imageUrl: imagePath, width: width, height: height, fit: fit, errorWidget: (context, url, error) => const NoDataImage(),);
     } else {
       return Image.asset(imagePath, width: width, height: height, fit: fit);
     }
