@@ -25,26 +25,18 @@ class _MyMapState extends State<MyMap> {
     GetIt.instance.getAsync<GeolocationService>().then((service) {
       setState(() {
         geolocationService = service;
-        setPositionAndState();
+        setPosition();
       });
       geolocationService!.loading.stream.listen((loading) {
         if (loading == false) {
-          setPositionAndState();
+          setPosition();
         }
       });
     });
   }
 
-  void setPositionAndState() {
-    if (geolocationService != null && mapReady) {
-      setState(() {
-        setPosition();
-      });
-    }
-  }
-
   void setPosition() {
-    if (geolocationService != null && mapReady) {
+    if (geolocationService != null && mapReady && geolocationService!.loading.state == false) {
       currentPosition = geolocationService?.currentPosition ?? GeolocationService.fallbackPosition;
       mapController.moveAndRotate(currentPosition.latLng, 9.2, 0);
     }
