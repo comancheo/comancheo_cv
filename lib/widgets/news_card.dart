@@ -4,7 +4,6 @@ import 'package:comancheo_cv/cubits/base_cubits.dart';
 import 'package:comancheo_cv/services/ctk_news.dart';
 import 'package:comancheo_cv/widgets/custom_card.dart';
 import 'package:comancheo_cv/widgets/image_widget.dart';
-import 'package:comancheo_cv/widgets/no_data_card.dart';
 import 'package:comancheo_cv/widgets/no_data_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

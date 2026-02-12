@@ -1,6 +1,7 @@
 import 'package:comancheo_cv/auto_route/app_router.dart';
 import 'package:comancheo_cv/styles/theme.dart';
 import 'package:comancheo_cv/styles/util.dart';
+import 'package:comancheo_cv/utils/globals.dart' as globals;
 import 'package:flutter/material.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,7 +17,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final _appRouter = AppRouter();
 
   @override
   void initState() {
@@ -39,7 +39,7 @@ class _MyAppState extends State<MyApp> {
 
     MaterialTheme theme = MaterialTheme(textTheme);
     return MaterialApp.router(
-      routerConfig: _appRouter.config(),
+      routerConfig: globals.appRouter.config(),
       title: 'Comancheos CV',
       theme: brightness == Brightness.light ? theme.light() : theme.dark(),
     );

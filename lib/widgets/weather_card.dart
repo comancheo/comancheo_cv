@@ -3,7 +3,6 @@ import 'package:comancheo_cv/models/weather_model.dart';
 import 'package:comancheo_cv/services/weather.dart';
 import 'package:comancheo_cv/utils/wmo_codes.dart';
 import 'package:comancheo_cv/widgets/custom_card.dart';
-import 'package:comancheo_cv/widgets/no_data_card.dart';
 import 'package:comancheo_cv/widgets/no_data_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

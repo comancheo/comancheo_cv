@@ -1,4 +1,5 @@
 import 'package:comancheo_cv/services/calendar.dart';
+import 'package:comancheo_cv/services/connection.dart';
 import 'package:comancheo_cv/services/ctk_news.dart';
 import 'package:comancheo_cv/services/weather.dart';
 import 'package:comancheo_cv/utils/geolocation.dart';
@@ -25,6 +26,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   final CtkNewsService _ctkNewsService = GetIt.instance<CtkNewsService>();
   final WeatherService _weatherService = GetIt.instance<WeatherService>();
   final CalendarService _calendarService = GetIt.instance<CalendarService>();
+  final ConnectionService _connectionService = GetIt.instance<ConnectionService>();
 
   @override
   void initState() {
@@ -41,7 +43,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     return CustomScaffold(
       onRefresh: () async {
-        await Future.wait([if (_geolocationReady) _geolocationService.refresh(), _ctkNewsService.loadNews(), _weatherService.loadWeather(), _calendarService.loadTodayData()]);
+        await Future.wait([if (_geolocationReady) _geolocationService.refresh(), _connectionService.checkConnection(), _ctkNewsService.loadNews(), _weatherService.loadWeather(), _calendarService.loadTodayData()]);
       },
       title: "Dashboard",
       body: [
