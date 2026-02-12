@@ -1,4 +1,3 @@
-import 'package:comancheo_cv/auto_route/app_router.dart';
 import 'package:comancheo_cv/styles/theme.dart';
 import 'package:comancheo_cv/styles/util.dart';
 import 'package:comancheo_cv/utils/globals.dart' as globals;

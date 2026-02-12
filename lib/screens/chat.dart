@@ -1,5 +1,4 @@
 import 'package:comancheo_cv/widgets/comming_soon_card.dart';
-import 'package:comancheo_cv/widgets/custom_card.dart';
 import 'package:comancheo_cv/widgets/custom_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
