@@ -50,11 +50,11 @@ class CustomScaffold extends StatelessWidget {
             await onRefresh?.call();
           },
           child: SingleChildScrollView(
-            child: Column(
+            child: ListView(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
               children: [
-                SizedBox(height: 100),
                 ...body,
-                SizedBox(height: 100),
               ],
             ),
           ),
