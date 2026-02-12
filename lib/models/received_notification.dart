@@ -1,5 +1,3 @@
-/// Objects for notification receiving. Used in Splash.dart
-
 class ReceivedNotification {
   final int? id;
   final String? title;

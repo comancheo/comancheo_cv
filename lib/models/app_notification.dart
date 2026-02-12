@@ -1,5 +1,3 @@
-  /// Provides notification logic: containc model, JSON object (de)serialization
-
 import 'dart:convert';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:collection/collection.dart';

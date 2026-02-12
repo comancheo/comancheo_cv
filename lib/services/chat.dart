@@ -19,7 +19,6 @@ class ChatService {
   Future<void> sendMessage(String message) async {
     // Simulate sending a message
     await Future.delayed(Duration(milliseconds: 500)); // Simulate network delay
-    print('Message sent: $message');
   }
 
   Future<List<String>> receiveMessages() async {
@@ -52,7 +51,6 @@ class ChatService {
     email = null;
     isVerified = false;
     deviceUUID = null;
-    print('All chat data deleted.');
   }
 
 }
