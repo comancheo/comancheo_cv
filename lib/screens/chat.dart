@@ -1,3 +1,4 @@
+import 'package:comancheo_cv/widgets/comming_soon_card.dart';
 import 'package:comancheo_cv/widgets/custom_card.dart';
 import 'package:comancheo_cv/widgets/custom_scaffold.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,11 @@ class _ChatScreenState extends State<ChatScreen> {
     return CustomScaffold(
       title: "Chat",
       body: [
-        ...List.generate(100, (index) => CustomCard(child:Text("Item $index"))),
+        SizedBox(height: 100,),
+        const CommingSoonCard(),
+        const SizedBox(height: 20),
+        Text('Chat functionality will be available in the future. Stay tuned!', style: Theme.of(context).textTheme.headlineMedium, textAlign: TextAlign.center),
+        SizedBox(height: 100,),
       ]
     );
   }
