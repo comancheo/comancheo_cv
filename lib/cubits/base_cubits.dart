@@ -42,6 +42,12 @@ class ListCubit<T> extends Cubit<List<T>> {
       emit([...state, value]);
     }
   }
+  void updateDiff(List<T> values){
+    final newValues = values.where((value) => !state.contains(value)).toList();
+    if(newValues.isNotEmpty){
+      emit([...state, ...newValues]);
+    }
+  }
 
   void remove(T value) => emit(state.where((element) => element != value).toList());
   void removeAt(int index) => emit([...state]..removeAt(index));

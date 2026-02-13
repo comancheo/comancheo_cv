@@ -18,6 +18,7 @@ Future<void> configureDependencies() async {
   await getIt.allReady();
   getIt.registerSingletonAsync<FirebaseService>(() async => FirebaseService().init());
   getIt.registerSingletonAsync<LocalNotificationService>(() async => LocalNotificationService().init());
+  await getIt.allReady();
   getIt.registerSingletonAsync<PermissionService>(() async => PermissionService().init());
   getIt.registerSingletonAsync<CtkNewsService>(() async => CtkNewsService().init());
   getIt.registerSingletonAsync<WeatherService>(() async => WeatherService().init());

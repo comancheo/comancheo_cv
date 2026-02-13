@@ -2,6 +2,7 @@
 
 import 'dart:io';
 
+import 'package:comancheo_cv/cubits/base_cubits.dart';
 import 'package:comancheo_cv/firebase_options.dart';
 import 'package:comancheo_cv/models/app_notification.dart';
 import 'package:comancheo_cv/utils/globals.dart' as globals;
@@ -23,6 +24,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 class FirebaseService {
+  NullStringCubit? fcm = NullStringCubit();
   Future<FirebaseService> init() async {
     await initializeFirebaseApp();
     await initializeFlutterFire();
@@ -71,13 +73,17 @@ class FirebaseService {
     String? token = await FirebaseMessaging.instance.getToken();
     debugPrint('FCM Token: $token');
     if (token != null) {
+      fcm!.set(token);
       // Upstream token to your backend via a service or directly
     }
 
     // If the FCM token was changed (it happens after reinstall, update, ..)
     FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
       debugPrint('New FCM Token: $newToken');
-      // Upstream new token to your backend via a service or directly
+      if (newToken != null) {
+        fcm!.set(newToken);
+        // Upstream token to your backend via a service or directly
+      }
     });
 
     // If the app was started by the tap on notification
