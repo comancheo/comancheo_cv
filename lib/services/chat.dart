@@ -28,6 +28,8 @@ class ChatService {
   String? token; //= '\$2y\$12\$gHpxl8sHMsNaH9IF0aTaH.ukhN/vpD6PVAz5HpuueOutL3n8kjmB6';
   String? id;
 
+  final TextEditingController messageController = TextEditingController();
+
 
 
   Future<ChatService> init() async {

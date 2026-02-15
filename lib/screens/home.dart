@@ -37,6 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
         extendBody: true,
         bottomNavigationBuilder: (_, tabsRouter) {
           return BottomNavigationBar(
+            useLegacyColorScheme: false,
             backgroundColor: Theme.of(context).colorScheme.surfaceDim,
             currentIndex: tabsRouter.activeIndex,
             onTap: tabsRouter.setActiveIndex,

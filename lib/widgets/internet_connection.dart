@@ -26,8 +26,8 @@ class _InternetConnectionIndicatorState extends State<InternetConnectionIndicato
               await _connectionService.checkConnection();
             },
             child: Container(
+              height: 60,
               padding: const EdgeInsets.all(8),
-              margin: const EdgeInsets.only(bottom: 20),
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.errorContainer,
                 border: Border.all(color: Theme.of(context).colorScheme.error, width: 1, strokeAlign: BorderSide.strokeAlignInside),
