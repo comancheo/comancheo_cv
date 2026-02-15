@@ -26,11 +26,24 @@ class _ChatScreenState extends State<ChatScreen> {
       builder: (context, loading) {
         return CustomScaffold(
           title: "Chat",
+          reverseListView: true,
           onRefresh: () async{
             await chatService.receiveMessages();
           },
+          items: [...chatService.messages.state],
+          itemBuilder: (context, index) {
+            final message = chatService.messages.state[index];
+            return Row(
+              mainAxisAlignment: index.isOdd ? MainAxisAlignment.end : MainAxisAlignment.start,
+              children:[CustomCard(
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: ListTile(
+                title: Text(message.body, textAlign: index.isOdd ? TextAlign.right : TextAlign.left),
+                subtitle: Text(message.timestamp.toString(), textAlign: index.isOdd ? TextAlign.right : TextAlign.left),
+              ),
+            )]);
+          },
           body: [
-            SizedBox(height: 100),
             const SizedBox(height: 20),
             ...List.generate(chatService.messages.state.length, (index) {
               final message = chatService.messages.state[index];
@@ -44,7 +57,6 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
               )]);
             }),
-            SizedBox(height: 100),
           ],
         );
       },

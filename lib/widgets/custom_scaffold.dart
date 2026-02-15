@@ -1,11 +1,11 @@
+import 'dart:math' as math;
+
 import 'package:auto_route/auto_route.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:comancheo_cv/cubits/base_cubits.dart';
-import 'package:comancheo_cv/services/connection.dart';
 import 'package:comancheo_cv/widgets/image_widget.dart';
+import 'package:comancheo_cv/widgets/internet_connection.dart';
+import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 
 class CustomScaffold extends StatefulWidget {
   final Widget? titleWidget;
@@ -13,14 +13,16 @@ class CustomScaffold extends StatefulWidget {
   final List<Widget> body;
   final Future<void> Function()? onRefresh;
   final bool primary;
+  final bool reverseListView;
+  final Widget? Function(BuildContext, int)? itemBuilder;
+  final List<dynamic>? items;
 
-  const CustomScaffold({super.key, this.titleWidget, this.title, required this.body, this.onRefresh, this.primary = true});
+  const CustomScaffold({super.key, this.titleWidget, this.title, required this.body, this.onRefresh, this.primary = true, this.reverseListView = false, this.itemBuilder, this.items});
   @override
   State<CustomScaffold> createState() => _CustomScaffoldState();
 }
 
 class _CustomScaffoldState extends State<CustomScaffold> {
-  final ConnectionService _connectionService = GetIt.instance<ConnectionService>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,43 +61,38 @@ class _CustomScaffoldState extends State<CustomScaffold> {
           image: DecorationImage(image: AssetImage("assets/logo.png"), fit: BoxFit.contain, opacity: 0.1),
         ),
         padding: const EdgeInsets.all(20),
-        child: RefreshIndicator(
-          onRefresh: () async {
-            await widget.onRefresh?.call();
-          },
-          child: SingleChildScrollView(
-            child: ListView(
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              children: [
-                BlocBuilder<BoolCubit, bool>(bloc: _connectionService.isConnectedCubit, builder: (context, isConnected) {
-                  if(isConnected) {
-                    return SizedBox();
-                  } else {
-                    return InkWell(
-                      onTap: () async {
-                        await _connectionService.checkConnection();
+        child: Padding(
+          padding: const EdgeInsets.only(top: 0),
+
+          child: CustomMaterialIndicator(
+            trigger: IndicatorTrigger.bothEdges,
+            displacement:100,
+            indicatorBuilder: (context, controller) {
+              return Padding(
+                padding: const EdgeInsets.all(6.0),
+                child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary, value: controller.state.isLoading ? null : math.min(controller.value, 1.0)),
+              );
+            },
+            onRefresh: () async {
+              await widget.onRefresh?.call();
+            },
+            child: SingleChildScrollView(
+              reverse: widget.reverseListView,
+              primary: true,
+              child: (widget.itemBuilder != null)
+                  ? ListView.builder(
+                      primary: true,
+                      shrinkWrap: true,
+                      itemCount: (widget.items?.length ?? 0)+1,
+                      physics: NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        if(index == (widget.items?.length ?? 0)){
+                          return InternetConnectionIndicator();
+                        }
+                        return widget.itemBuilder!(context, index);
                       },
-                      child:Container(
-                      padding: const EdgeInsets.all(8),
-                      margin: const EdgeInsets.only(bottom: 20),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.errorContainer,
-                        border: Border.all(color: Theme.of(context).colorScheme.error, width: 1, strokeAlign: BorderSide.strokeAlignInside),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.warning, color: Theme.of(context).colorScheme.onErrorContainer),
-                          SizedBox(width: 8),
-                          Text("Není připojení k internetu", style: TextStyle(color: Theme.of(context).colorScheme.onErrorContainer)),
-                        ],
-                      ),
-                    ));
-                  }
-                }),
-                ...widget.body,
-              ],
+                    )
+                  : ListView(primary: true, shrinkWrap: true, physics: NeverScrollableScrollPhysics(), children: [InternetConnectionIndicator(), ...widget.body]),
             ),
           ),
         ),

@@ -18,4 +18,9 @@ class ChatMessage {
       fromUser: json['users_id'],
     );
   }
+  @override
+  bool operator ==(Object other) => other is ChatMessage && fromUser == other.fromUser && timestamp == other.timestamp && body == other.body && deleted == other.deleted;
+  
+  @override
+  int get hashCode => Object.hash(fromUser, timestamp, body, deleted);
 }

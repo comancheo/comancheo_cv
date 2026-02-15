@@ -59,6 +59,7 @@ dependencies:
       url: https://github.com/comancheo/flutter_nameday_package.git
   internet_connection_checker_plus: ^2.9.1+2
   marqueer: ^2.4.3
+  custom_refresh_indicator: ^4.0.1
 
 
 dev_dependencies:
