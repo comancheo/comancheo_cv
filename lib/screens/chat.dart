@@ -5,6 +5,7 @@ import 'package:comancheo_cv/widgets/comming_soon_card.dart';
 import 'package:comancheo_cv/widgets/custom_card.dart';
 import 'package:comancheo_cv/widgets/custom_scaffold.dart';
 import 'package:comancheo_cv/widgets/internet_connection.dart';
+import 'package:comancheo_cv/widgets/message_card.dart';
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -72,17 +73,11 @@ class _ChatScreenState extends State<ChatScreen> {
             const SizedBox(height: 20),
             ...List.generate(chatService.messages.state.length, (index) {
               final message = chatService.messages.state[index];
-              return Row(
-                mainAxisAlignment: index.isOdd ? MainAxisAlignment.end : MainAxisAlignment.start,
-                children: [
-                  CustomCard(
-                    width: MediaQuery.of(context).size.width * 0.8,
-                    child: ListTile(
-                      title: Text(message.body, textAlign: index.isOdd ? TextAlign.right : TextAlign.left),
-                      subtitle: Text(message.timestamp.toString(), textAlign: index.isOdd ? TextAlign.right : TextAlign.left),
-                    ),
-                  ),
-                ],
+              return MessageCard(
+                meEmail: chatService.email ?? "",
+                email: message.email,
+                body: message.body,
+                timestamp: message.timestamp,
               );
             }),
           ],
