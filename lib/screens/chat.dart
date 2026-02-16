@@ -1,10 +1,7 @@
 import 'package:comancheo_cv/cubits/base_cubits.dart';
 import 'package:comancheo_cv/models/chat_message.dart';
 import 'package:comancheo_cv/services/chat.dart';
-import 'package:comancheo_cv/widgets/comming_soon_card.dart';
-import 'package:comancheo_cv/widgets/custom_card.dart';
 import 'package:comancheo_cv/widgets/custom_scaffold.dart';
-import 'package:comancheo_cv/widgets/internet_connection.dart';
 import 'package:comancheo_cv/widgets/message_card.dart';
 import 'package:flutter/material.dart';
 import 'package:auto_route/auto_route.dart';

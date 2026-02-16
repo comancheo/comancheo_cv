@@ -1,9 +1,14 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:comancheo_cv/auto_route/app_router.gr.dart';
+import 'package:comancheo_cv/cubits/base_cubits.dart';
 import 'package:comancheo_cv/models/app_notification.dart';
+import 'package:comancheo_cv/models/chat_message.dart';
+import 'package:comancheo_cv/services/chat.dart';
 import 'package:comancheo_cv/utils/globals.dart' as globals;
 import 'package:comancheo_cv/widgets/notification_dialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 
 @RoutePage()
 class HomeScreen extends StatefulWidget {
@@ -14,7 +19,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  Set notificationDialogOpenIds = {};
+  final ChatService chatService = GetIt.instance.get<ChatService>();
+  final Set notificationDialogOpenIds = {};
   @override
   void initState() {
     super.initState();
@@ -29,26 +35,34 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      top: true,
-      bottom: true,
-      child: AutoTabsScaffold(
-        routes: [DashboardEmptyRoute(children:[DashboardRoute()]), ChatRoute()],
-        extendBody: true,
-        bottomNavigationBuilder: (_, tabsRouter) {
-          return BottomNavigationBar(
-            useLegacyColorScheme: false,
-            backgroundColor: Theme.of(context).colorScheme.surfaceDim,
-            currentIndex: tabsRouter.activeIndex,
-            onTap: tabsRouter.setActiveIndex,
-            type: BottomNavigationBarType.fixed,
-            items: const [
-              BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Dashboard'),
-              BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'Chat'),
+    return BlocBuilder<NullStringCubit, String?>(
+      bloc: chatService.token,
+      builder: (context, loading) {
+        return SafeArea(
+          top: true,
+          bottom: true,
+          child: AutoTabsScaffold(
+            routes: [
+              DashboardEmptyRoute(children: [DashboardRoute()]),
+              ChatEmptyRoute(children: [(chatService.token.state??'').isNotEmpty ? ChatRoute() : ChatLoginRoute()]),
             ],
-          );
-        },
-      ),
+            extendBody: true,
+            bottomNavigationBuilder: (_, tabsRouter) {
+              return BottomNavigationBar(
+                useLegacyColorScheme: false,
+                backgroundColor: Theme.of(context).colorScheme.surfaceDim,
+                currentIndex: tabsRouter.activeIndex,
+                onTap: tabsRouter.setActiveIndex,
+                type: BottomNavigationBarType.fixed,
+                items: const [
+                  BottomNavigationBarItem(icon: Icon(Icons.dashboard), label: 'Dashboard'),
+                  BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'Chat'),
+                ],
+              );
+            },
+          ),
+        );
+      },
     );
   }
 
@@ -59,12 +73,12 @@ class _HomeScreenState extends State<HomeScreen> {
       await showDialog(
         context: context,
         builder: (BuildContext context) {
-          return NotificationDialog(
-            title: notif.title,
-            body: notif.body,
-          );
+          return NotificationDialog(title: notif.title, body: notif.body);
         },
       );
+      if(chatService.token.state != null){
+        await chatService.receiveMessages();
+      }
 
       notificationDialogOpenIds.remove(notif.id);
       globals.notificationToShow = null;

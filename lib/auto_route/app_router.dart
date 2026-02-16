@@ -21,7 +21,11 @@ class AppRouter extends RootStackRouter {
           AutoRoute(path: 'Dashboard', page: DashboardRoute.page, usesPathAsKey: true),
           AutoRoute(path: 'News', page: NewsRoute.page, usesPathAsKey: true,)
         ]),
-        AutoRoute(path: 'Chat', page: ChatRoute.page, usesPathAsKey: true, children: []),
+        AutoRoute(path: 'ChatEmptyRoute', page: ChatEmptyRoute.page, usesPathAsKey: true, children: [
+          AutoRoute(path: 'Chat', page: ChatRoute.page, usesPathAsKey: true, children: []),
+          AutoRoute(path: 'ChatLogin', page: ChatLoginRoute.page, usesPathAsKey: true, children: []),
+
+        ]),
       ],
     ),
   ];
@@ -36,4 +40,10 @@ class AppRouter extends RootStackRouter {
 class DashboardEmptyPage extends AutoRouter {
   final String name;
   const DashboardEmptyPage({super.key, this.name = 'EmptyPage'});
+}
+
+@RoutePage(name: 'ChatEmptyRoute')
+class ChatEmptyPage extends AutoRouter {
+  final String name;
+  const ChatEmptyPage({super.key, this.name = 'EmptyPage'});
 }

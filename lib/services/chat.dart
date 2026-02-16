@@ -25,10 +25,11 @@ class ChatService {
   String? email;
   bool verified = false;
   String? deviceUUID;
-  String? token; //= '\$2y\$12\$gHpxl8sHMsNaH9IF0aTaH.ukhN/vpD6PVAz5HpuueOutL3n8kjmB6';
-  String? id;
+  final NullStringCubit token = NullStringCubit(); //= '\$2y\$12\$gHpxl8sHMsNaH9IF0aTaH.ukhN/vpD6PVAz5HpuueOutL3n8kjmB6';
+  int? id;
 
   final TextEditingController messageController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
 
 
 
@@ -44,7 +45,6 @@ class ChatService {
   Future<void> initFcmListener() async {
     firebaseService.fcm!.stream.listen((newToken) async {
       debugPrint('ChatService received new FCM token: $newToken');
-      token = newToken;
       await updateFCMToken(newToken);
     });
   }
@@ -64,6 +64,7 @@ class ChatService {
   }
 
   Future<void> createUser() async {
+    email = emailController.text;
     final data = await doPost({'event': 'createUser', 'email': email, 'fcm': firebaseService.fcm!.state, 'uuid': deviceUUID});
     if (data == null) {
       return;
@@ -80,7 +81,7 @@ class ChatService {
       email = response['data']['email'];
       verified = response['data']['verified']>0;
       deviceUUID = response['data']['uuid'];
-      token = response['data']['token'];
+      token.set(response['data']['token']);
       await storeUserCredentials();
     }
     debugPrint('Create user response: ${data.body}');
@@ -117,7 +118,6 @@ class ChatService {
         SnackBar(content: Text(response['message'])),
       );
     }
-    debugPrint('Get messages response: ${data.body}');
     if(response['state'] == 'success' && response['data']!= null){
       for(var message in response['data']){
         messages.updateDiff([ChatMessage.fromJson(message)]);
@@ -126,7 +126,7 @@ class ChatService {
   }
 
   Future<void> updateFCMToken(String? newToken) async {
-    if(token == null || deviceUUID == null || newToken == null){
+    if(token.state == null || deviceUUID == null || newToken == null){
       return;
     }
     final data = await doPost({'event': 'updateFcm', 'fcm': newToken});
@@ -157,14 +157,39 @@ class ChatService {
     if (storedCredentials != null) {
       id = storedCredentials['id'];
       deviceUUID = storedCredentials['uuid'];
-      token = storedCredentials['token'];
+      token.set(storedCredentials['token']);
       email = storedCredentials['email'];
       verified = storedCredentials['verified'];
     }
+    await loadUserCredentialsFromServer();
+  }
+
+  //reload data from server to update credentials (e.g. after email verification)
+  Future<void> loadUserCredentialsFromServer() async {
+      final data = await doPost({'event': 'getUser'});
+      if (data == null) {
+        return;
+      }
+      dynamic response = json.decode(data.body);
+      if(response['state'] == 'error'){
+        ScaffoldMessenger.of(globals.appRouter.navigatorKey.currentContext!).showSnackBar(
+          SnackBar(content: Text(response['message'])),
+        );
+        return;
+      }
+      debugPrint('Get user credentials response: ${data.body}');
+      if(response['state'] == 'success' && response['data']!= null){
+        id = response['data']['id'];
+        deviceUUID = response['data']['uuid'];
+        token.set(response['data']['token']);
+        email = response['data']['email'];
+        verified = response['data']['verified']>0;
+        await storeUserCredentials();
+      }
   }
 
   Future<void> storeUserCredentials() async {
-    localStorageService.saveData(StorageKeys.userCredentials, {'uuid': deviceUUID, 'token': token,'email': email, 'verified': verified});
+    localStorageService.saveData(StorageKeys.userCredentials, {'uuid': deviceUUID, 'token': token.state,'email': email, 'verified': verified});
   }
 
   Future<void> verifyEmail(String email) async {
@@ -187,7 +212,7 @@ class ChatService {
       return null;
     }
     if(token != null){
-      body['token'] = token;
+      body['token'] = token.state;
     }
     final http.Response response = await http.post(Uri.parse(apiUrl), headers: headers, body: json.encode(body));
     debugPrint('API response: ${response.request} - ${response.statusCode} - ${response.body}');
