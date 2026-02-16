@@ -2,7 +2,6 @@ import 'package:auto_route/auto_route.dart';
 import 'package:comancheo_cv/auto_route/app_router.gr.dart';
 import 'package:comancheo_cv/cubits/base_cubits.dart';
 import 'package:comancheo_cv/models/app_notification.dart';
-import 'package:comancheo_cv/models/chat_message.dart';
 import 'package:comancheo_cv/services/chat.dart';
 import 'package:comancheo_cv/utils/globals.dart' as globals;
 import 'package:comancheo_cv/widgets/notification_dialog.dart';
@@ -35,16 +34,32 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<NullStringCubit, String?>(
-      bloc: chatService.token,
-      builder: (context, loading) {
-        return SafeArea(
+    return MultiBlocListener(
+  listeners: [
+    BlocListener<NullStringCubit, String?>(
+      bloc:chatService.token,
+      listener: (context, state) {
+        setState(() {
+          
+        });
+      },
+    ),
+    BlocListener<BoolCubit, bool>(
+      bloc:chatService.verified,
+      listener: (context, state) {
+        setState(() {
+          
+        });
+      },
+    ),
+  ],
+  child: SafeArea(
           top: true,
           bottom: true,
           child: AutoTabsScaffold(
             routes: [
               DashboardEmptyRoute(children: [DashboardRoute()]),
-              ChatEmptyRoute(children: [(chatService.token.state??'').isNotEmpty ? ChatRoute() : ChatLoginRoute()]),
+              ChatEmptyRoute(children: [((chatService.token.state??'').isNotEmpty && chatService.verified.state)? ChatRoute() : ChatLoginRoute()]),
             ],
             extendBody: true,
             bottomNavigationBuilder: (_, tabsRouter) {
@@ -61,8 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
               );
             },
           ),
-        );
-      },
+        )
     );
   }
 

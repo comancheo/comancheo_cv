@@ -21,33 +21,39 @@ class NewsScreenState extends State<NewsScreen> {
   final CtkNewsService _ctkNewsService = GetIt.instance<CtkNewsService>();
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<NullBoolCubit, bool?>(
-      bloc: _ctkNewsService.loading,
-      builder: (context, loading) {
-        return BlocBuilder<ListCubit<RssItem>, List<RssItem>>(
-          bloc: _ctkNewsService.newsItems,
-          builder: (context, items) {
-            return CustomScaffold(
-              primary: false,
-              onRefresh: () async {
-                return await _ctkNewsService.loadNews();
-              },
-              title: "Zprávy ČTK",
-              body: [
-                if (loading == true) ...[
-                    const Center(child: CircularProgressIndicator()),
-                  ] else if (items.isEmpty) ...[
-                    const NoDataCard(),
-                  ] else
-                ...List.generate(_ctkNewsService.newsItems.state.length, (index) {
-                  final item = _ctkNewsService.newsItems.state[index];
-                  return NewsItemCard(title: item.title ?? '', description: item.description ?? '', imageUrl: item.enclosure?.url, link: item.link);
-                }),
-              ],
-            );
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<NullBoolCubit, bool?>(
+          bloc: _ctkNewsService.loading,
+          listener: (context, state) {
+            setState(() {});
           },
-        );
-      },
+        ),
+        BlocListener<ListCubit<RssItem>, List<RssItem>>(
+          bloc: _ctkNewsService.newsItems,
+          listener: (context, state) {
+            setState(() {});
+          },
+        ),
+      ],
+      child: CustomScaffold(
+        primary: false,
+        onRefresh: () async {
+          return await _ctkNewsService.loadNews();
+        },
+        title: "Zprávy ČTK",
+        body: [
+          if (_ctkNewsService.loading.state == true) ...[
+            const Center(child: CircularProgressIndicator()),
+          ] else if (_ctkNewsService.newsItems.state.isEmpty) ...[
+            const NoDataCard(),
+          ] else
+            ...List.generate(_ctkNewsService.newsItems.state.length, (index) {
+              final item = _ctkNewsService.newsItems.state[index];
+              return NewsItemCard(title: item.title ?? '', description: item.description ?? '', imageUrl: item.enclosure?.url, link: item.link);
+            }),
+        ],
+      ),
     );
   }
 }

@@ -33,53 +33,50 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<ListCubit<ChatMessage>, List<ChatMessage>>(
-      bloc: chatService.messages,
-      builder: (context, loading) {
-        return CustomScaffold(
-          title: "Chat",
-          reverseListView: true,
-          onRefresh: () async {
-            await chatService.receiveMessages();
-          },
-          fixedFooterButtons: [
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: chatService.messageController,
-                    decoration: InputDecoration(
-                      hintText: "Napište zprávu",
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    ),
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<ListCubit<ChatMessage>, List<ChatMessage>>(bloc: chatService.messages, listener: (context, state) {
+          setState(() {});
+        }),
+      ],
+      child: CustomScaffold(
+        title: "Chat",
+        reverseListView: true,
+        onRefresh: () async {
+          await chatService.receiveMessages();
+        },
+        fixedFooterButtons: [
+          Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  controller: chatService.messageController,
+                  decoration: InputDecoration(
+                    hintText: "Napište zprávu",
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   ),
                 ),
-                const SizedBox(width: 8),
-                ElevatedButton(
-                  onPressed: () async {
-                    await chatService.sendMessage(chatService.messageController.text);
-                    chatService.messageController.clear();
-                  },
-                  child: Text("Odeslat"),
-                ),
-              ],
-            ),
-          ],
-          body: [
-            const SizedBox(height: 20),
-            ...List.generate(chatService.messages.state.length, (index) {
-              final message = chatService.messages.state[index];
-              return MessageCard(
-                meEmail: chatService.email ?? "",
-                email: message.email,
-                body: message.body,
-                timestamp: message.timestamp,
-              );
-            }),
-          ],
-        );
-      },
+              ),
+              const SizedBox(width: 8),
+              ElevatedButton(
+                onPressed: () async {
+                  await chatService.sendMessage(chatService.messageController.text);
+                  chatService.messageController.clear();
+                },
+                child: Text("Odeslat"),
+              ),
+            ],
+          ),
+        ],
+        body: [
+          const SizedBox(height: 20),
+          ...List.generate(chatService.messages.state.length, (index) {
+            final message = chatService.messages.state[index];
+            return MessageCard(meEmail: chatService.email.state ?? "", email: message.email, body: message.body, timestamp: message.timestamp);
+          }),
+        ],
+      ),
     );
   }
 }

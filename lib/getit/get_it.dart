@@ -13,13 +13,14 @@ import 'package:get_it/get_it.dart';
 final getIt = GetIt.instance;
 
 Future<void> configureDependencies() async {
+  getIt.registerSingletonAsync<PermissionService>(() async => PermissionService().init());
+  await getIt.allReady();
   getIt.registerSingletonAsync<ConnectionService>(() async => ConnectionService().init());
   getIt.registerSingletonAsync<LocalStorageService>(() async => LocalStorageService().init());
   await getIt.allReady();
   getIt.registerSingletonAsync<FirebaseService>(() async => FirebaseService().init());
   getIt.registerSingletonAsync<LocalNotificationService>(() async => LocalNotificationService().init());
   await getIt.allReady();
-  getIt.registerSingletonAsync<PermissionService>(() async => PermissionService().init());
   getIt.registerSingletonAsync<CtkNewsService>(() async => CtkNewsService().init());
   getIt.registerSingletonAsync<WeatherService>(() async => WeatherService().init());
   getIt.registerSingletonAsync<CalendarService>(() async => CalendarService().init());

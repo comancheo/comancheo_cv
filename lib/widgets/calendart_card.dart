@@ -17,37 +17,41 @@ class _CalendarCardState extends State<CalendarCard> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<NullBoolCubit, bool?>(
-      bloc: _calendarService.loading,
-      builder: (context, loading) {
-        return BlocBuilder<ListCubit<String>, List<String>>(
-          bloc: _calendarService.namesDay,
-          builder: (context, namesDay) {
-            return CustomCard(
-              width: 155,
-              height: 155,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('${DateTime.now().day}. ${DateTime.now().month}.\n${DateTime.now().year}', style: Theme.of(context).textTheme.headlineMedium),
-                  if (loading == true) ...[
-                    const Center(child: CircularProgressIndicator()),
-                  ] else if (namesDay.isEmpty) ...[
-                    const SizedBox(),
-                  ] else ...[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(namesDay.join(', '), style: Theme.of(context).textTheme.headlineSmall),
-                      ],
-                    ),
-                  ],
-                ],
-              ),
-            );
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<NullBoolCubit, bool?>(
+          bloc: _calendarService.loading,
+          listener: (context, state) {
+            setState(() {});
           },
-        );
-      },
+        ),
+        BlocListener<ListCubit<String>, List<String>>(
+          bloc: _calendarService.namesDay,
+          listener: (context, state) {
+            setState(() {});
+          },
+        ),
+      ],
+      child: CustomCard(
+        width: 155,
+        height: 155,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('${DateTime.now().day}. ${DateTime.now().month}.\n${DateTime.now().year}', style: Theme.of(context).textTheme.headlineMedium),
+            if (_calendarService.loading.state == true) ...[
+              const Center(child: CircularProgressIndicator()),
+            ] else if (_calendarService.namesDay.state.isEmpty) ...[
+              const SizedBox(),
+            ] else ...[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [Text(_calendarService.namesDay.state.join(', '), style: Theme.of(context).textTheme.headlineSmall)],
+              ),
+            ],
+          ],
+        ),
+      ),
     );
   }
 }

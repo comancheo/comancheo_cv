@@ -22,14 +22,15 @@ class ChatService {
   final FirebaseService firebaseService = GetIt.instance.get<FirebaseService>();
   final Uuid _uuid = Uuid();
   final ListCubit<ChatMessage> messages = ListCubit<ChatMessage>([]);
-  String? email;
-  bool verified = false;
-  String? deviceUUID;
+  final NullStringCubit email = NullStringCubit();
+  final BoolCubit verified = BoolCubit(false);
+  final NullStringCubit deviceUUID = NullStringCubit();
   final NullStringCubit token = NullStringCubit(); //= '\$2y\$12\$gHpxl8sHMsNaH9IF0aTaH.ukhN/vpD6PVAz5HpuueOutL3n8kjmB6';
   int? id;
 
   final TextEditingController messageController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
+  final TextEditingController codeFromEmailController = TextEditingController();
 
 
 
@@ -63,8 +64,8 @@ class ChatService {
   }
 
   Future<void> createUser() async {
-    email = emailController.text;
-    final data = await _doPost({'event': 'createUser', 'email': email, 'fcm': firebaseService.fcm!.state, 'uuid': deviceUUID});
+    email.set(emailController.text);
+    final data = await _doPost({'event': 'createUser', 'email': email.state, 'fcm': firebaseService.fcm!.state, 'uuid': deviceUUID.state});
     if (data == null) {
       return;
     }
@@ -77,9 +78,9 @@ class ChatService {
     }
     debugPrint('Create user response: ${response['data']['token']}');
     if(response['state'] == 'success' && response['data']!= null && response['data']['token'] != null){
-      email = response['data']['email'];
-      verified = response['data']['verified']>0;
-      deviceUUID = response['data']['uuid'];
+      email.set(response['data']['email']);
+      verified.set(response['data']['verified']>0);
+      deviceUUID.set(response['data']['uuid']);
       token.set(response['data']['token']);
       await storeUserCredentials();
     }
@@ -124,7 +125,7 @@ class ChatService {
   }
 
   Future<void> updateFCMToken(String? newToken) async {
-    if(token.state == null || deviceUUID == null || newToken == null){
+    if(token.state == null || deviceUUID.state == null || newToken == null){
       return;
     }
     final data = await _doPost({'event': 'updateFcm', 'fcm': newToken});
@@ -141,12 +142,12 @@ class ChatService {
   Future<void> loadDeviceUUID() async {
     var storedUUID = localStorageService.getData(StorageKeys.deviceUUID);
     if (storedUUID != null) {
-      deviceUUID = storedUUID;
+      deviceUUID.set(storedUUID);
       return;
     }
 
-    deviceUUID = _uuid.v4(); // Example UUID
-    localStorageService.saveData(StorageKeys.deviceUUID, deviceUUID);
+    deviceUUID.set(_uuid.v4()); // Example UUID
+    localStorageService.saveData(StorageKeys.deviceUUID, deviceUUID.state);
   }
 
   Future<void> loadUserCredentials() async {
@@ -154,10 +155,10 @@ class ChatService {
     debugPrint('Loaded user credentials: $storedCredentials');
     if (storedCredentials != null) {
       id = storedCredentials['id'];
-      deviceUUID = storedCredentials['uuid'];
+      deviceUUID.set(storedCredentials['uuid']);
       token.set(storedCredentials['token']);
-      email = storedCredentials['email'];
-      verified = storedCredentials['verified'];
+      email.set(storedCredentials['email']);
+      verified.set(storedCredentials['verified']);
     }
     await loadUserCredentialsFromServer();
   }
@@ -177,38 +178,50 @@ class ChatService {
       }
       if(response['state'] == 'success'){
         id = response['data']['id'];
-        deviceUUID = response['data']['uuid'];
+        deviceUUID.set(response['data']['uuid']);
         token.set(response['data']['token']);
-        email = response['data']['email'];
-        verified = response['data']['verified']>0;
+        email.set(response['data']['email']);
+        verified.set(response['data']['verified']>0);
         await storeUserCredentials();
       }
   }
 
   Future<void> storeUserCredentials() async {
-    localStorageService.saveData(StorageKeys.userCredentials, {'uuid': deviceUUID, 'token': token.state,'email': email, 'verified': verified, 'id': id});
+    localStorageService.saveData(StorageKeys.userCredentials, {'uuid': deviceUUID.state, 'token': token.state,'email': email.state, 'verified': verified.state, 'id': id});
   }
 
-  Future<void> verifyEmail(String email) async {
-    // Simulate email verification process
-    await Future.delayed(Duration(seconds: 1)); // Simulate verification delay
-    this.email = email;
-    verified = true; // Assume verification is successful for this example
+  Future<void> verifyEmail() async {
+    final data = await _doPost({'event': 'verifyEmailByCode', 'emailCode': codeFromEmailController.text});
+    if (data == null) {
+      return;
+    }
+    dynamic response = json.decode(data.body);
+    if(response['state'] == 'error'){
+      ScaffoldMessenger.of(globals.appRouter.navigatorKey.currentContext!).showSnackBar(
+        SnackBar(content: Text(response['message'])),
+      );
+      return;
+    }
+    if(response['state'] == 'success' && response['data']!= null){
+      token.set(response['data']['token']);
+      await storeUserCredentials();
+      await loadUserCredentialsFromServer();
+    }
   }
 
   Future<void> deleteAllData() async {
     // Simulate deleting all chat data
     await Future.delayed(Duration(seconds: 1)); // Simulate deletion delay
-    email = null;
-    verified = false;
-    deviceUUID = null;
+    email.set(null);
+    verified.set(false);
+    deviceUUID.set(null);
   }
 
   Future<http.Response?> _doPost(Map<String, dynamic> body) async {
     if (!connectionService.isConnectedCubit.state) {
       return null;
     }
-    if(token != null){
+    if(token.state != null){
       body['token'] = token.state;
     }
     final http.Response response = await http.post(Uri.parse(apiUrl), headers: headers, body: json.encode(body));

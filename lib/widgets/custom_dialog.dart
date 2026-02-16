@@ -22,9 +22,9 @@ class _CustomDialogState extends State<CustomDialog> {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16).copyWith(right: 10, top: 15),
             child: Row(
+              
               children: [
-                if (widget.title != null) Text(widget.title!, style: Theme.of(context).textTheme.headlineSmall),
-                const Spacer(),
+                if (widget.title != null) Expanded(child:Text(widget.title!, style: Theme.of(context).textTheme.headlineSmall, maxLines: 10,),),
                 SizedBox(
                   height: 20,
                   child: IconButton(

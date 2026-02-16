@@ -17,50 +17,55 @@ class WeatherCard extends StatefulWidget {
 
 class _WeatherCardState extends State<WeatherCard> {
   final WeatherService _weatherService = GetIt.instance<WeatherService>();
-
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<NullBoolCubit, bool?>(
-      bloc: _weatherService.loading,
-      builder: (context, loading) {
-        return BlocBuilder<NullForecastModelCubit, ForecastModel?>(
-          bloc: _weatherService.forecast,
-          builder: (context, forecast) {
-            return CustomCard(
+    return MultiBlocListener(
+        listeners: [
+          BlocListener<NullBoolCubit, bool?>(
+            bloc: _weatherService.loading,
+            listener: (context, state) {
+              setState(() {});
+            },
+          ),
+          BlocListener<NullForecastModelCubit, ForecastModel?>(
+            bloc: _weatherService.forecast,
+            listener: (context, state) {
+              setState(() {});
+            },
+          ),
+        ],
+        child:CustomCard(
               width: 155,
               height: 155,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  if (loading == true) ...[
+                  if (_weatherService.loading.state == true) ...[
                     const Center(child: CircularProgressIndicator()),
-                  ] else if (forecast == null) ...[
+                  ] else if (_weatherService.forecast.state == null) ...[
                     const NoDataImage(),
                   ] else ...[
                     Row(
                       children: [
-                        Text('${forecast.currentWeather.windSpeed?.toStringAsFixed(0)} ', style: Theme.of(context).textTheme.headlineSmall),
-                        Text(forecast.currentWeather.windSpeedUnit, style: Theme.of(context).textTheme.bodySmall),
+                        Text('${_weatherService.forecast.state!.currentWeather.windSpeed?.toStringAsFixed(0)} ', style: Theme.of(context).textTheme.headlineSmall),
+                        Text(_weatherService.forecast.state!.currentWeather.windSpeedUnit, style: Theme.of(context).textTheme.bodySmall),
                         Spacer(),
-                        Text('${forecast.currentWeather.humidity?.toStringAsFixed(0)} ', style: Theme.of(context).textTheme.headlineSmall),
-                        Text(forecast.currentWeather.humidityUnit, style: Theme.of(context).textTheme.bodySmall),
+                        Text('${_weatherService.forecast.state!.currentWeather.humidity?.toStringAsFixed(0)} ', style: Theme.of(context).textTheme.headlineSmall),
+                        Text(_weatherService.forecast.state!.currentWeather.humidityUnit, style: Theme.of(context).textTheme.bodySmall),
                       ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text('${forecast.currentWeather.temperature} ', style: Theme.of(context).textTheme.headlineMedium),
-                        Text(forecast.currentWeather.temperatureUnit, style: Theme.of(context).textTheme.bodyMedium),
+                        Text('${_weatherService.forecast.state!.currentWeather.temperature} ', style: Theme.of(context).textTheme.headlineMedium),
+                        Text(_weatherService.forecast.state!.currentWeather.temperatureUnit, style: Theme.of(context).textTheme.bodyMedium),
                       ],
                     ),
-                    Text('${wmoCodes[forecast.currentWeather.weatherCode]?['day']?['description'] ?? 'Neznámé'}', style: Theme.of(context).textTheme.bodyMedium),
+                    Text('${wmoCodes[_weatherService.forecast.state!.currentWeather.weatherCode]?['day']?['description'] ?? 'Neznámé'}', style: Theme.of(context).textTheme.bodyMedium),
                   ],
                 ],
               ),
-            );
-          },
+            )
         );
-      },
-    );
   }
 }

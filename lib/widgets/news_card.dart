@@ -26,45 +26,51 @@ class NewsCardState extends State<NewsCard> {
       onTap: () {
         context.router.push(NewsRoute());
       },
-      child: BlocBuilder<NullBoolCubit, bool?>(
-        bloc: _ctkNewsService.loading,
-        builder: (context, loading) {
-          return BlocBuilder<ListCubit<RssItem>, List<RssItem>>(
-            bloc: _ctkNewsService.newsItems,
-            builder: (context, items) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("Zprávy ČTK", style: Theme.of(context).textTheme.headlineSmall),
-                  const SizedBox(height: 20),
-                  if (loading == true) ...[
-                    const Center(child: CircularProgressIndicator()),
-                  ] else if (items.isEmpty) ...[
-                    const Center(child: NoDataImage()),
-                  ] else
-                    ...List.generate(3, (index) {
-                      final RssItem item = _ctkNewsService.newsItems.state[index];
-                      return DropCapText(
-                        (item.title ?? '').trimLeft(),
-                        style: Theme.of(context).textTheme.bodyMedium,
-                        dropCap: (item.enclosure?.url == null)
-                            ? null
-                            : DropCap(
-                                width: 60,
-                                height: 60,
-                                child: Padding(
-                                  padding: EdgeInsets.only(right: 10, bottom: 10),
-                                  child: ImageWidget(imagePath: item.enclosure!.url!, width: 50, height: 50),
-                                ),
-                              ),
-                      );
-                    }),
-                ],
-              );
+      child: MultiBlocListener(
+        listeners: [
+          BlocListener<NullBoolCubit, bool?>(
+            bloc: _ctkNewsService.loading,
+            listener: (context, state) {
+              setState(() {});
             },
-          );
-        },
+          ),
+          BlocListener<ListCubit<RssItem>, List<RssItem>>(
+            bloc: _ctkNewsService.newsItems,
+            listener: (context, state) {
+              setState(() {});
+            },
+          ),
+        ],
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("Zprávy ČTK", style: Theme.of(context).textTheme.headlineSmall),
+            const SizedBox(height: 20),
+            if (_ctkNewsService.loading.state == true) ...[
+              const Center(child: CircularProgressIndicator()),
+            ] else if (_ctkNewsService.newsItems.state.isEmpty) ...[
+              const Center(child: NoDataImage()),
+            ] else
+              ...List.generate(3, (index) {
+                final RssItem item = _ctkNewsService.newsItems.state[index];
+                return DropCapText(
+                  (item.title ?? '').trimLeft(),
+                  style: Theme.of(context).textTheme.bodyMedium,
+                  dropCap: (item.enclosure?.url == null)
+                      ? null
+                      : DropCap(
+                          width: 60,
+                          height: 60,
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 10, bottom: 10),
+                            child: ImageWidget(imagePath: item.enclosure!.url!, width: 50, height: 50),
+                          ),
+                        ),
+                );
+              }),
+          ],
+        ),
       ),
     );
   }
