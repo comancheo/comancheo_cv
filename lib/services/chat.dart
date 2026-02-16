@@ -49,7 +49,7 @@ class ChatService {
     });
   }
   Future<void> sendPushToAll() async {
-    final data = await doPost({'event': 'sendPush'});
+    final data = await _doPost({'event': 'sendPush'});
     if (data == null) {
       return;
     }
@@ -60,12 +60,11 @@ class ChatService {
       );
       return;
     }
-    debugPrint('Send push response: ${data.body}');
   }
 
   Future<void> createUser() async {
     email = emailController.text;
-    final data = await doPost({'event': 'createUser', 'email': email, 'fcm': firebaseService.fcm!.state, 'uuid': deviceUUID});
+    final data = await _doPost({'event': 'createUser', 'email': email, 'fcm': firebaseService.fcm!.state, 'uuid': deviceUUID});
     if (data == null) {
       return;
     }
@@ -88,7 +87,7 @@ class ChatService {
   }
 
   Future<void> sendMessage(String message) async {
-    final data = await doPost({'event': 'createMessage', 'message': message});
+    final data = await _doPost({'event': 'createMessage', 'message': message});
     if (data == null) {
       return;
     }
@@ -104,11 +103,10 @@ class ChatService {
         messages.updateDiff([ChatMessage.fromJson(message)]);
       }
     }
-    debugPrint('Create message response: ${data.body}');
   }
 
   Future<void> receiveMessages() async {
-    final data = await doPost({'event': 'getMessages'});
+    final data = await _doPost({'event': 'getMessages'});
     if (data == null) {
       return;
     }
@@ -129,7 +127,7 @@ class ChatService {
     if(token.state == null || deviceUUID == null || newToken == null){
       return;
     }
-    final data = await doPost({'event': 'updateFcm', 'fcm': newToken});
+    final data = await _doPost({'event': 'updateFcm', 'fcm': newToken});
     if (data == null) {
       return;
     }
@@ -166,7 +164,7 @@ class ChatService {
 
   //reload data from server to update credentials (e.g. after email verification)
   Future<void> loadUserCredentialsFromServer() async {
-      final data = await doPost({'event': 'getUser'});
+      final data = await _doPost({'event': 'getUser'});
       if (data == null) {
         return;
       }
@@ -207,7 +205,7 @@ class ChatService {
     deviceUUID = null;
   }
 
-  Future<http.Response?> doPost(Map<String, dynamic> body) async {
+  Future<http.Response?> _doPost(Map<String, dynamic> body) async {
     if (!connectionService.isConnectedCubit.state) {
       return null;
     }
