@@ -171,6 +171,13 @@ class ChatService {
       }
       dynamic response = json.decode(data.body);
       if(response['state'] == 'error'){
+        if(response['message'] == 'User not found.'){
+          id = null;
+          token.set(null);
+          email.set(null);
+          verified.set(false);
+          await storeUserCredentials();
+        }
         ScaffoldMessenger.of(globals.appRouter.navigatorKey.currentContext!).showSnackBar(
           SnackBar(content: Text(response['message'])),
         );
