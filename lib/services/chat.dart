@@ -175,8 +175,7 @@ class ChatService {
         );
         return;
       }
-      debugPrint('Get user credentials response: ${data.body}');
-      if(response['state'] == 'success' && response['data']!= null){
+      if(response['state'] == 'success'){
         id = response['data']['id'];
         deviceUUID = response['data']['uuid'];
         token.set(response['data']['token']);
@@ -187,7 +186,7 @@ class ChatService {
   }
 
   Future<void> storeUserCredentials() async {
-    localStorageService.saveData(StorageKeys.userCredentials, {'uuid': deviceUUID, 'token': token.state,'email': email, 'verified': verified});
+    localStorageService.saveData(StorageKeys.userCredentials, {'uuid': deviceUUID, 'token': token.state,'email': email, 'verified': verified, 'id': id});
   }
 
   Future<void> verifyEmail(String email) async {
