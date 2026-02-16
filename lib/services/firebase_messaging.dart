@@ -1,15 +1,18 @@
 
 
+import 'dart:async';
 import 'dart:io';
 
 import 'package:comancheo_cv/cubits/base_cubits.dart';
 import 'package:comancheo_cv/firebase_options.dart';
 import 'package:comancheo_cv/models/app_notification.dart';
+import 'package:comancheo_cv/services/connection.dart';
 import 'package:comancheo_cv/utils/globals.dart' as globals;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
+import 'package:get_it/get_it.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -24,14 +27,33 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 class FirebaseService {
+  ConnectionService connectionService = GetIt.instance<ConnectionService>();
   NullStringCubit? fcm = NullStringCubit();
+  StreamSubscription<bool>? nextTrySubscription;
+
   Future<FirebaseService> init() async {
-    await initializeFirebaseApp();
-    await initializeFlutterFire();
-    if(Platform.isIOS){
+    nextTrySubscription?.cancel();
+    if(connectionService.isConnectedCubit.state == false) {
+      debugPrint('No internet connection, skipping Firebase initialization');
+      nextTrySubscription = connectionService.isConnectedCubit.stream.listen((isConnected) async {
+        if (isConnected) {
+          debugPrint('Internet connection restored, initializing Firebase');
+          await init();
+        }
+      });
       return this;
     }
-    await initializeMessaging();
+    try {
+      await initializeFirebaseApp();
+      await initializeFlutterFire();
+      await initializeMessaging();
+    } catch (e) {
+      debugPrint('Error initializing Firebase: $e');
+      Future.delayed(const Duration(seconds: 5), () async {
+        debugPrint('Retrying Firebase initialization after error: $e');
+        await init();
+      });
+    }
     return this;
   }
   

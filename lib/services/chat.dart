@@ -87,6 +87,25 @@ class ChatService {
     debugPrint('Create user response: ${data.body}');
   }
 
+  Future<void> resendEmailCode() async {
+    final data = await _doPost({'event': 'resendEmailCode', 'email': email.state});
+    if (data == null) {
+      return;
+    }
+    dynamic response = json.decode(data.body);
+    if(response['state'] == 'error'){
+      ScaffoldMessenger.of(globals.appRouter.navigatorKey.currentContext!).showSnackBar(
+        SnackBar(content: Text(response['message'])),
+      );
+      return;
+    }
+    if(response['state'] == 'success'){
+      ScaffoldMessenger.of(globals.appRouter.navigatorKey.currentContext!).showSnackBar(
+        SnackBar(content: Text('Kód byl znovu odeslán na email ${email.state}')),
+      );
+    }
+  }
+
   Future<void> sendMessage(String message) async {
     final data = await _doPost({'event': 'createMessage', 'message': message});
     if (data == null) {
