@@ -12,7 +12,7 @@ import 'package:uuid/uuid.dart';
 import 'package:http/http.dart' as http;
 
 class ChatService {
-  static String apiUrl = 'https://www.tabor-belun.cz/xmasgame/api.php';
+  static String apiUrl = 'https://comancheo.cz/cv/api/';
   static Map<String, String> headers = {
   'Content-Type': 'application/json',
   'Accept': 'application/json',
