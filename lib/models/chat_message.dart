@@ -1,5 +1,5 @@
 class ChatMessage {
-  final String body;
+  final String? body;
   final DateTime timestamp;
   final bool deleted;
   final String email;
