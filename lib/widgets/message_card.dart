@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class MessageCard extends StatelessWidget {
   final String meEmail;
   final String email;
-  final String body;
+  final String? body;
   final DateTime timestamp;
 
   const MessageCard({super.key, required this.meEmail, required this.email, required this.body, required this.timestamp});
@@ -21,7 +21,7 @@ class MessageCard extends StatelessWidget {
             spacing: 4,
             children: [
               Text(email, style: Theme.of(context).textTheme.bodySmall),
-              Text(body, textAlign: meEmail == email ? TextAlign.right : TextAlign.left, style: Theme.of(context).textTheme.bodyMedium),
+              if (body != null) Text(body!, textAlign: meEmail == email ? TextAlign.right : TextAlign.left, style: Theme.of(context).textTheme.bodyMedium),
               Text(timestamp.toString(), style: TextStyle(fontSize: 10, color: Theme.of(context).colorScheme.onSurfaceVariant)),
             ],
           ),
