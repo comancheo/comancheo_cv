@@ -13,10 +13,7 @@ import 'package:http/http.dart' as http;
 
 class ChatService {
   static String apiUrl = 'https://cv.comancheo.cz/api/';
-  static Map<String, String> headers = {
-  'Content-Type': 'application/json',
-  'Accept': 'application/json',
-};
+  static Map<String, String> headers = {'Content-Type': 'application/json', 'Accept': 'application/json'};
   final ConnectionService connectionService = GetIt.instance.get<ConnectionService>();
   final LocalStorageService localStorageService = GetIt.instance<LocalStorageService>();
   final FirebaseService firebaseService = GetIt.instance.get<FirebaseService>();
@@ -31,8 +28,6 @@ class ChatService {
   final TextEditingController messageController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController codeFromEmailController = TextEditingController();
-
-
 
   Future<ChatService> init() async {
     // Initialize any resources or connections needed for the chat service
@@ -49,16 +44,15 @@ class ChatService {
       await updateFCMToken(newToken);
     });
   }
+
   Future<void> sendPushToAll() async {
     final data = await _doPost({'event': 'sendPush'});
     if (data == null) {
       return;
     }
     dynamic response = json.decode(data.body);
-    if(response['state'] == 'error'){
-      ScaffoldMessenger.of(globals.appRouter.navigatorKey.currentContext!).showSnackBar(
-        SnackBar(content: Text(response['message'])),
-      );
+    if (response['state'] == 'error') {
+      ScaffoldMessenger.of(globals.appRouter.navigatorKey.currentContext!).showSnackBar(SnackBar(content: Text(response['message'])));
       return;
     }
   }
@@ -70,16 +64,14 @@ class ChatService {
       return;
     }
     dynamic response = json.decode(data.body);
-    if(response['state'] == 'error'){
-      ScaffoldMessenger.of(globals.appRouter.navigatorKey.currentContext!).showSnackBar(
-        SnackBar(content: Text(response['message'])),
-      );
+    if (response['state'] == 'error') {
+      ScaffoldMessenger.of(globals.appRouter.navigatorKey.currentContext!).showSnackBar(SnackBar(content: Text(response['message'])));
       return;
     }
     debugPrint('Create user response: ${response['data']['token']}');
-    if(response['state'] == 'success' && response['data']!= null && response['data']['token'] != null){
+    if (response['state'] == 'success' && response['data'] != null && response['data']['token'] != null) {
       email.set(response['data']['email']);
-      verified.set(response['data']['verified']>0);
+      verified.set(response['data']['verified'] > 0);
       deviceUUID.set(response['data']['uuid']);
       token.set(response['data']['token']);
       await storeUserCredentials();
@@ -93,16 +85,12 @@ class ChatService {
       return;
     }
     dynamic response = json.decode(data.body);
-    if(response['state'] == 'error'){
-      ScaffoldMessenger.of(globals.appRouter.navigatorKey.currentContext!).showSnackBar(
-        SnackBar(content: Text(response['message'])),
-      );
+    if (response['state'] == 'error') {
+      ScaffoldMessenger.of(globals.appRouter.navigatorKey.currentContext!).showSnackBar(SnackBar(content: Text(response['message'])));
       return;
     }
-    if(response['state'] == 'success'){
-      ScaffoldMessenger.of(globals.appRouter.navigatorKey.currentContext!).showSnackBar(
-        SnackBar(content: Text('Kód byl znovu odeslán na email ${email.state}')),
-      );
+    if (response['state'] == 'success') {
+      ScaffoldMessenger.of(globals.appRouter.navigatorKey.currentContext!).showSnackBar(SnackBar(content: Text('Kód byl znovu odeslán na email ${email.state}')));
     }
   }
 
@@ -112,14 +100,12 @@ class ChatService {
       return;
     }
     dynamic response = json.decode(data.body);
-    if(response['state'] == 'error'){
-      ScaffoldMessenger.of(globals.appRouter.navigatorKey.currentContext!).showSnackBar(
-        SnackBar(content: Text(response['message'])),
-      );
+    if (response['state'] == 'error') {
+      ScaffoldMessenger.of(globals.appRouter.navigatorKey.currentContext!).showSnackBar(SnackBar(content: Text(response['message'])));
       return;
     }
-    if(response['state'] == 'success' && response['data']!= null && response['data'].isNotEmpty){
-      for(var message in response['data']){
+    if (response['state'] == 'success' && response['data'] != null && response['data'].isNotEmpty) {
+      for (var message in response['data']) {
         messages.updateDiff([ChatMessage.fromJson(message)]);
       }
     }
@@ -131,30 +117,26 @@ class ChatService {
       return;
     }
     dynamic response = json.decode(data.body);
-    if(response['state'] == 'error'){
-      ScaffoldMessenger.of(globals.appRouter.navigatorKey.currentContext!).showSnackBar(
-        SnackBar(content: Text(response['message'])),
-      );
+    if (response['state'] == 'error') {
+      ScaffoldMessenger.of(globals.appRouter.navigatorKey.currentContext!).showSnackBar(SnackBar(content: Text(response['message'])));
     }
-    if(response['state'] == 'success' && response['data']!= null){
-      for(var message in response['data']){
+    if (response['state'] == 'success' && response['data'] != null) {
+      for (var message in response['data']) {
         messages.updateDiff([ChatMessage.fromJson(message)]);
       }
     }
   }
 
   Future<void> updateFCMToken(String? newToken) async {
-    if(token.state == null || deviceUUID.state == null || newToken == null){
+    if (token.state == null || deviceUUID.state == null || newToken == null) {
       return;
     }
     final data = await _doPost({'event': 'updateFcm', 'fcm': newToken});
     if (data == null) {
       return;
     }
-    if(json.decode(data.body)['state'] == 'error'){
-      ScaffoldMessenger.of(globals.appRouter.navigatorKey.currentContext!).showSnackBar(
-        SnackBar(content: Text(json.decode(data.body)['message'])),
-      );
+    if (json.decode(data.body)['state'] == 'error') {
+      ScaffoldMessenger.of(globals.appRouter.navigatorKey.currentContext!).showSnackBar(SnackBar(content: Text(json.decode(data.body)['message'])));
     }
   }
 
@@ -184,36 +166,34 @@ class ChatService {
 
   //reload data from server to update credentials (e.g. after email verification)
   Future<void> loadUserCredentialsFromServer() async {
-      final data = await _doPost({'event': 'getUser'});
-      if (data == null) {
-        return;
-      }
-      dynamic response = json.decode(data.body);
-      if(response['state'] == 'error'){
-        if(response['message'] == 'User not found.'){
-          id = null;
-          token.set(null);
-          email.set(null);
-          verified.set(false);
-          await storeUserCredentials();
-        }
-        ScaffoldMessenger.of(globals.appRouter.navigatorKey.currentContext!).showSnackBar(
-          SnackBar(content: Text(response['message'])),
-        );
-        return;
-      }
-      if(response['state'] == 'success'){
-        id = response['data']['id'];
-        deviceUUID.set(response['data']['uuid']);
-        token.set(response['data']['token']);
-        email.set(response['data']['email']);
-        verified.set(response['data']['verified']>0);
+    final data = await _doPost({'event': 'getUser'});
+    if (data == null) {
+      return;
+    }
+    dynamic response = json.decode(data.body);
+    if (response['state'] == 'error') {
+      if (response['message'] == 'User not found.') {
+        id = null;
+        token.set(null);
+        email.set(null);
+        verified.set(false);
         await storeUserCredentials();
       }
+      ScaffoldMessenger.of(globals.appRouter.navigatorKey.currentContext!).showSnackBar(SnackBar(content: Text(response['message'])));
+      return;
+    }
+    if (response['state'] == 'success') {
+      id = response['data']['id'];
+      deviceUUID.set(response['data']['uuid']);
+      token.set(response['data']['token']);
+      email.set(response['data']['email']);
+      verified.set(response['data']['verified'] > 0);
+      await storeUserCredentials();
+    }
   }
 
   Future<void> storeUserCredentials() async {
-    localStorageService.saveData(StorageKeys.userCredentials, {'uuid': deviceUUID.state, 'token': token.state,'email': email.state, 'verified': verified.state, 'id': id});
+    localStorageService.saveData(StorageKeys.userCredentials, {'uuid': deviceUUID.state, 'token': token.state, 'email': email.state, 'verified': verified.state, 'id': id});
   }
 
   Future<void> verifyEmail() async {
@@ -222,13 +202,11 @@ class ChatService {
       return;
     }
     dynamic response = json.decode(data.body);
-    if(response['state'] == 'error'){
-      ScaffoldMessenger.of(globals.appRouter.navigatorKey.currentContext!).showSnackBar(
-        SnackBar(content: Text(response['message'])),
-      );
+    if (response['state'] == 'error') {
+      ScaffoldMessenger.of(globals.appRouter.navigatorKey.currentContext!).showSnackBar(SnackBar(content: Text(response['message'])));
       return;
     }
-    if(response['state'] == 'success' && response['data']!= null){
+    if (response['state'] == 'success' && response['data'] != null) {
       token.set(response['data']['token']);
       await storeUserCredentials();
       await loadUserCredentialsFromServer();
@@ -244,14 +222,20 @@ class ChatService {
   }
 
   Future<http.Response?> _doPost(Map<String, dynamic> body) async {
-    if (!connectionService.isConnectedCubit.state) {
+    try {
+      if (!connectionService.isConnectedCubit.state) {
+        return null;
+      }
+      if (token.state != null) {
+        body['token'] = token.state;
+      }
+      final http.Response response = await http.post(Uri.parse(apiUrl), headers: headers, body: json.encode(body));
+      debugPrint('API response: ${response.request} - ${response.statusCode} - ${response.body}');
+      return response;
+    } catch (e) {
+      debugPrint('Error during API call: $e');
+      ScaffoldMessenger.of(globals.appRouter.navigatorKey.currentContext!).showSnackBar(SnackBar(content: Text('Chyba při komunikaci se serverem: $e')));
       return null;
     }
-    if(token.state != null){
-      body['token'] = token.state;
-    }
-    final http.Response response = await http.post(Uri.parse(apiUrl), headers: headers, body: json.encode(body));
-    debugPrint('API response: ${response.request} - ${response.statusCode} - ${response.body}');
-    return response;
   }
 }
